@@ -1,8 +1,10 @@
 import blogs from "../models/blog.models.js";
-
+import comment from "../../comments/models/comment.models.js";
+import catchAsync from "../../utils/catchAsync.js";
+import AppError from "../../utils/appError.js"
 const homepage = (req, res) => res.json({ message: "request recieved" });
 
-const getBlogs = async (req, res, next) => {
+const getBlogs = catchAsync(async (req, res, next) => {
   const articles = await blogs.find({});
   res.status(200).json({
     status: "success",
@@ -11,21 +13,26 @@ const getBlogs = async (req, res, next) => {
       articles,
     },
   });
-};
+});
 
-const addBlog = async (req, res, next) => {
+const addBlog = catchAsync(async (req, res, next) => {
+  console.log(req.file);
+
   let articleInfo = {};
   articleInfo.title = req.body.title;
   articleInfo.article = req.body.article;
+  articleInfo.author = req.user.name;
+  articleInfo.imagesUrl = req.file.path;
   articleInfo.createdAt = new Date().toISOString();
   const newArticle = await blogs.create(articleInfo);
   res.status(201).json({
-    status: "success",
+    message: "Blog was successfully created",
     newArticle,
   });
-};
+});
 
-const getBlog = async (req, res, next) => {
+const getBlog = catchAsync(async (req, res, next) => {
+  const comments = await comment.find({ articleId: req.params.id })
   const Article = await blogs.findById(req.params.id);
   if (!Article) {
     return next(new AppError("No article found with that ID", 404));
@@ -34,9 +41,10 @@ const getBlog = async (req, res, next) => {
     status: "success",
     data: {
       Article,
+      comments
     },
   });
-};
+});
 
 //Update Helper
 const filterObj = (obj, ...allowedFields) => {
@@ -48,7 +56,7 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 //Update controll API
-const updateBlog = async (req, res, next) => {
+const updateBlog = catchAsync(async (req, res, next) => {
   let _id = { _id: req.params.id };
   const filterBody = filterObj(req.body, "title", "article");
   const articles = await blogs.findByIdAndUpdate(_id, filterBody, {
@@ -56,7 +64,7 @@ const updateBlog = async (req, res, next) => {
     runValidators: true,
   });
   if (!articles) {
-    res.status(404).json({ status: "No article found with that ID" });
+    return next(new AppError("No article found with that ID", 404));
   }
   res.status(200).json({
     status: "success",
@@ -64,18 +72,19 @@ const updateBlog = async (req, res, next) => {
       articles,
     },
   });
-};
+});
 
-const deleteBlog = async (req, res, next) => {
+const deleteBlog = catchAsync(async (req, res, next) => {
   let query = { _id: req.params.id };
   const articleDeleted = await blogs.findByIdAndDelete(query);
+  await comment.deleteMany({ articleId: query })
   if (!articleDeleted) {
-    res.status(404).json({ status: "No article found with that ID" });
+    return next(new AppError("No article found with that ID", 404));
   }
   res.status(200).json({
     status: "Deleted Successfully",
     data: null,
   });
-};
+});
 
 export { homepage, getBlogs, getBlog, updateBlog, addBlog, deleteBlog, blogs };

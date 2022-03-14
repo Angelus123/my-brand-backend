@@ -1,16 +1,19 @@
 import validator from "validator";
 import mongoose from "mongoose";
-
-
     const blogSchema = new mongoose.Schema({
     title:{
         type: String,
         required: true,
-        unique: true
+      
     },
     article:{
         type: String,
         required: true
+    },
+    imagesUrl:{
+        type: String,
+      
+
     },
     authorId:{
         type: String,
@@ -23,11 +26,7 @@ import mongoose from "mongoose";
     author:{
         type: String,
         // required: true
-    },
-
-    
-    
-  
+    }, 
 
 })
 //let article = module.exports= mo.model('Article',artSchma);

@@ -1,34 +1,85 @@
-const messages = [];
-const homepage = (req, res) => res.json({message: 'request recieved'});
+import messages from "../models/message.models.js";
+import AppError from "../../utils/appError.js";
 
-const getMessages = (req, res) => res.json({message: 'all blogs retrieved', messages});
+const homepage = (req, res) => res.json({ message: "request recieved" });
 
-const addMessage = (req, res) => {
-  const blog = req.body;
-  blog.id = blogs.length;
-  blogs.push(blog);
-  res.json({message: `blog ${blog.name} successfully created`, blog});
-}
+const getMessages = async (req, res, next) => {
+  const message = await messages.find({});
+  res.status(200).json({
+    status: "success",
+    results: message.length,
+    data: {
+      message,
+    },
+  });
+};
 
-const getMessage = (req, res) => {
-  const blog = req.body;
-  blog.id = blogs.length;
-  blogs.push(blog);
-  res.json({message: `message ${blog.name} successfully created`, message});
-}
+const addMessage = async (req, res, next) => {
+  console.log(req.user)
+  let messageInfo = {};
+  messageInfo.name = req.user.name;
+  messageInfo.email = req.user.email;
+  messageInfo.message = req.body.message;
+  messageInfo.createdAt = new Date().toISOString();
+  console.log(messageInfo)
+  const newMessage = await messages.create(messageInfo);
+  res.status(201).json({
+    status: "success",
+    newMessage,
+  });
+};
 
-const updateMessage = (req, res) => {
-  const id = req.params.id;
-  const blog = blogs.find((e) => e.id == id);
-  const update = req.body;
-  Object.assign(blog, update);
-  res.json({message: `blog with id ${id} successfully updated`, blog: blog})
-}
+const getMessage = async (req, res, next) => {
+  const message = await messages.findById(req.params.id);
+  if (!message) {
+    return next(new AppError("No article found with that ID", 404));
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      message,
+    },
+  });
+};
 
-const deleteMessage = (req, res) => {
-  const {id} = req.params;
-  blogs.splice(id, 1);
-  res.json({message: `blog with id ${id} successfully deleted`});
-}
+//Update Helper
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 
-export {homepage, getMessages, getMessage, updateMessage, addMessage, deleteMessage, messages}
+//Update controll API
+const updateMessage = async (req, res, next) => {
+  let _id = { _id: req.params.id };
+  const filterBody = filterObj(req.body, "name", "email", "message");
+  const messages = await messages.findByIdAndUpdate(_id, filterBody, {
+    new: true,
+    runValidators: true,
+  });
+  if (!messages) {
+    res.status(404).json({ status: "No article found with that ID" });
+  }
+  res.status(200).json({
+    status: "success",
+    data: {
+      articles,
+    },
+  });
+};
+
+const deleteMessage = async (req, res, next) => {
+  let query = { _id: req.params.id };
+  const articleDeleted = await messages.findByIdAndDelete(query);
+  if (!articleDeleted) {
+    res.status(404).json({ status: "No article found with that ID" });
+  }
+  res.status(200).json({
+    status: "Deleted Successfully",
+    data: null,
+  });
+};
+
+export { homepage, getMessages, getMessage, updateMessage, addMessage, deleteMessage, messages }

@@ -1,34 +1,63 @@
-const comments = [];
-const homepage = (req, res) => res.json({message: 'request recieved'});
-
-const getComments = (req, res) => res.json({message: 'all comments retrieved', comments});
-
-const addComment = (req, res) => {
-  const comment = req.body;
-  comment.id = comments.length;
-  comments.push(comment);
-  res.json({message: `comment ${comment.name} successfully created`, comment});
+import Comment from '../models/comment.models.js';
+const homepage = (req, res) => res.json({ message: "request recieved" });
+const addComment = async (req,res,next)=>{
+ let commentInfo= {};
+ commentInfo.comment=req.body.comment;
+ commentInfo.articleId=req.body.articleId;
+ commentInfo.authorId=req.user.id;
+ commentInfo.createdAt=new Date().toISOString();
+ const comments = await Comment.create(commentInfo);
+  res.status(201).json({
+      status:'success',
+      createdOn:req.requestTime,
+      data:{
+        comments
+      }
+  })
+}
+ 
+const getComments = async (req,res,next)=>{
+  req.requestTime  =new Date().toISOString();
+  const comments = await Comment.find();
+  res.status(200).json({
+    status:'success',
+    data:{
+        comments
+    }
+  })
 }
 
-const getComment = (req, res) => {
-  const comment = req.body;
-  comment.id = comments.length;
-  comments.push(comment);
-  res.json({message: `comment ${comment.name} successfully created`, comment});
+
+const getComment = async (req,res,next)=>{
+
+  const comment= await Comment.findById(req.params.id)
+  console.log(comment) 
+  res.status(200).json({
+      status:'success',
+      data:{
+        comment
+      }
+    })
 }
 
-const updateComment = (req, res) => {
-  const id = req.params.id;
-  const comment = comments.find((e) => e.id == id);
-  const update = req.body;
-  Object.assign(comment, update);
-  res.json({message: `comment with id ${id} successfully updated`, comment: comment})
+
+const deleteComment = async (req,res,next)=>{
+  await comment.findByIdAndDelete(req.params.id)
+  res.status(200).json({
+      status:'success',
+      data:{}
+    })
 }
 
-const deleteComment = (req, res) => {
-  const {id} = req.params;
-  comments.splice(id, 1);
-  res.json({message: `comment with id ${id} successfully deleted`});
-}
+const updateComment = async (req,res,next)=>{
+    const comment=await Comment.findByIdAndUpdate(req.params.id, req.body,{
+        new:true,
+        runValidator:true
+    })
+    res.status(200).json({
+        success:true,
+        data: comment
+    })
 
-export {homepage, getComments, getComment, updateComment, addComment, deleteComment, comments}
+}
+export {homepage, getComments, getComment, updateComment, addComment, deleteComment}
