@@ -1,12 +1,14 @@
 import users from "../models/user.models.js";
 const homepage = (req, res) => res.json({ message: "request recieved" });
 const getUsers = async (req, res, next) => {
-  const users = await users.find({});
+  console.log("Hello")
+  const  allUsers = await users.find({});
+  console.log( allUsers, "Hello")
   res.status(200).json({
     status: "success",
-    results: users.length,
+    Number:  allUsers.length,
     data: {
-      articles,
+      allUsers,
     },
   });
 };
@@ -16,7 +18,6 @@ const addUser = async (req, res, next) => {
   articleInfo.name = req.body.name;
   articleInfo.email = req.body.email;
   articleInfo.phone = req.body.phone;
-  articleInfo.role = req.body.role;
   articleInfo.password = req.body.password;
   articleInfo.confirmPassword = req.body.confirmPassword;
   articleInfo.createdAt = new Date().toISOString();

@@ -19,9 +19,13 @@ import mongoose from "mongoose";
         type: String,
         // required: true
     },
-    createdAt:{
+    createdAt: {
         type: String,
         // required: true
+    },
+    comments: {
+        type: Array,
+
     },
     author:{
         type: String,
