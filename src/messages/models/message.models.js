@@ -17,5 +17,5 @@ const messageSchema = new mongoose.Schema({
     },
 })
 //let article = module.exports= mo.model('Article',artSchma);
-const messages = mongoose.model("messages", messageSchema);
+const messages = mongoose.model("myBrandMessages", messageSchema);
 export default messages;

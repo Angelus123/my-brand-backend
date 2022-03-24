@@ -71,6 +71,7 @@ const updateMessage = async (req, res, next) => {
 };
 
 const deleteMessage = async (req, res, next) => {
+  console.log(req.params.id)
   let query = { _id: req.params.id };
   const articleDeleted = await messages.findByIdAndDelete(query);
   if (!articleDeleted) {
