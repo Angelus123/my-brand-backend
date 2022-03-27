@@ -13,7 +13,8 @@ import mongoose from "mongoose";
     },
     email:{
         type: String,
-        // required: true
+        required: true,
+        unique:true
     },
     createdAt:{
         type: String,

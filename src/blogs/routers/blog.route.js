@@ -12,7 +12,7 @@ router.get('/', homepage);
 
 router.get('/blogs', getBlogs);
 
-router.post('/blogs', upload.single('blogImage'), authControl.protect, authControl.restrictTo('admin'),addBlog);
+router.post('/blogs', authControl.protect, authControl.restrictTo('admin'),addBlog);
 
 router.get('/blogs/:id', getBlog);
 router.put('/blogs/:id/comment', addComment);

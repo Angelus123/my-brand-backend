@@ -19,9 +19,8 @@ const addUser = async (req, res, next) => {
   articleInfo.email = req.body.email;
   articleInfo.phone = req.body.phone;
   articleInfo.password = req.body.password;
-  articleInfo.confirmPassword = req.body.confirmPassword;
+  articleInfo.confirmpassword = req.body.confirmPassword;
   articleInfo.createdAt = new Date().toISOString();
-  console.log("articleInfo: ", articleInfo);
   const newArticle = await users.create(articleInfo);
   res.status(201).json({
     status: "success",
