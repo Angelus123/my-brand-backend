@@ -1,5 +1,5 @@
 {
-  "name": "my-brand-backend",
+  "name": "swagger-api-library",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,26 +9,24 @@
     "dev": "nodemon src/",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
     "dotenv": "^16.0.0",
-    "express": "^4.17.3",
-    "express-restrict": "^0.0.3",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.4",
-    "multer": "^1.4.4",
-    "nodemailer": "^6.7.2",
-    "supertest": "^6.2.2",
-    "validator": "^13.7.0"
-  },
-  "devDependencies": {
+    "express": "^4.17.1",
     "jest": "^27.5.1",
-    "nodemon": "^2.0.15"
+    "jsonwebtoken": "^8.5.1",
+    "lowdb": "^1.0.0",
+    "mongoose": "^6.2.9",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.4",
+    "nanoid": "^3.1.20",
+    "nodemailer": "^6.7.3",
+    "nodemon": "^2.0.15",
+    "supertest": "^6.2.2",
+    "swagger-jsdoc": "^6.0.1",
+    "swagger-ui-express": "^4.1.6"
   }
 }

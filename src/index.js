@@ -6,13 +6,21 @@ import * as globalErrorHandling from "./utils/ErrorController.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
-
+import morgan from "morgan";
+import low from "lowdb";
+import swaggerUI from "swagger-ui-express";
+import swaggerJsDoc from "swagger-jsdoc";
+import booksRouter from "./routes/books.js";
+import FileSync from "lowdb/adapters/FileSync.js";
+const adapter = new FileSync("db.json");
+const db = low(adapter);
 process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
   console.log("uncaught Exception * Shutdown");
   process.exit(1);
 });
 dotenv.config({ path: "./config/config.env" });
+db.defaults({ books: [] }).write();
 
 const port = process.env.PORT;
 const DB = process.env.DATABASE;
@@ -24,13 +32,36 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log(" Db connection done successfully"));
-const app = express();
+
+  const options = { 
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "Library API",
+        version: "1.0.0",
+        description: "My brand Library API",
+      },
+      servers: [
+        {
+          url: "http://localhost:4042",
+        },
+      ],
+    },
+    apis: ["./routes/*.js"],
+  };
+const specs = swaggerJsDoc(options);
+const app = express(); 
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+app.db = db;
+app.use("/books", booksRouter);
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
 app.get('/', (req,res)=>{res.status(200).send({
   status:200, 
   message:'welcome to patiente registration',
 })})
+app.use("/books", booksRouter);
 app.use("/api/v1/", userRouter);
 app.use("/api/v1/", blogRouter);
 app.use("/api/v1/", messageRouter);
