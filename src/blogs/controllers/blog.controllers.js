@@ -13,7 +13,28 @@ const getBlogs = catchAsync(async (req, res, next) => {
     },
   });
 });
-
+/**
+ * @swagger
+ * /books:
+ *   post:
+ *     summary: Create a new book
+ *     tags: [Books]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Book'
+ *     responses:
+ *       200:
+ *         description: The book was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       500:
+ *         description: Some server error
+ */
 const addBlog = catchAsync(async (req, res, next) => {
   let articleInfo = {};
   articleInfo.title = req.body.title;
