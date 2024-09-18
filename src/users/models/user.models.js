@@ -63,13 +63,11 @@ userSchema.pre('save',async function(next){
 }) 
 userSchema.pre(/^find/, function(next){
     // this point to current querry
-    // this.find({active:  true});
     this.find({active:{$ne:false}});
     next()
 })
 
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword){
-        // console.log(candidatePassword, userPassword)
     return await bcrypt.compare(candidatePassword,userPassword)
 
 }
@@ -78,7 +76,6 @@ userSchema.methods.changesPassordAfter = function(JWTTImestamp){
         const changedTimestamp =parseInt(this.passwordChangedAt.getTime()/1000,
         10
         )
-        // console.log(   ,"++++++++",JWTTImestamp,"hello")
         return JWTTImestamp<changedTimestamp
     }
     return false
@@ -90,7 +87,6 @@ userSchema.methods.createPasswordResetToken = function () {
  .createHash('sha256')
  .update(resetToken)
  .digest('hex')
-//  console.log((resetToken)," newwwww", this.passwordResetToken)
  this.passwordResetExpires = Date.now()+10*60*1000
  
  return resetToken
