@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import model from '../database/models';
+import model from "../database/models";
 import AppError from '../utils/appError';
 import catchAsync from '../utils/catchAsync';
 import {Op} from "sequelize";
